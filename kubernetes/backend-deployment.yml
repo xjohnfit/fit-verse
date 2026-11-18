@@ -19,12 +19,12 @@ spec:
         image: xjohnfit/fitverse-backend:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 4001
+        - containerPort: 5000
         env:
         - name: NODE_ENV
           value: "production"
         - name: PORT
-          value: "4001"
+          value: "5000"
         - name: FRONTEND_URL
           value: "https://fitverse.codewithxjohn.com"
         - name: MONGO_URI
@@ -72,12 +72,12 @@ spec:
         livenessProbe:
           httpGet:
             path: /api/health
-            port: 4001
+            port: 5000
           initialDelaySeconds: 30
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /api/health
-            port: 4001
+            port: 5000
           initialDelaySeconds: 5
           periodSeconds: 5

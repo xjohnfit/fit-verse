@@ -22,20 +22,20 @@ const getSocketUrl = () => {
 
     // Development mode
     const YOUR_IP = '192.168.4.53';
-    const devUrl = `http://${YOUR_IP}:5004`;
+    const devUrl = `http://${YOUR_IP}:5000`;
 
     // Check if running in Expo Go (physical device)
     const isExpoGo = Constants.appOwnership === 'expo';
 
     if (Platform.OS === 'android') {
-        return isExpoGo ? devUrl : 'http://10.0.2.2:5004';
+        return isExpoGo ? devUrl : 'http://10.0.2.2:5000';
     }
 
     if (Platform.OS === 'ios') {
-        return isExpoGo ? devUrl : 'http://localhost:5004';
+        return isExpoGo ? devUrl : 'http://localhost:5000';
     }
 
-    return 'http://localhost:5004';
+    return 'http://localhost:5000';
 };
 
 const SOCKET_URL = getSocketUrl();

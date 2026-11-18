@@ -41,7 +41,7 @@ spec:
           service:
             name: fitverse-backend
             port:
-              number: 4001
+              number: 5000
   # Backend API - www.api.fitverse.codewithxjohn.com
   - host: www.api.fitverse.codewithxjohn.com
     http:
@@ -52,7 +52,7 @@ spec:
           service:
             name: fitverse-backend
             port:
-              number: 4001
+              number: 5000
   tls:
   - hosts:
     - fitverse.codewithxjohn.com

@@ -7,6 +7,6 @@ spec:
     app: fitverse-backend
   ports:
   - protocol: TCP
-    port: 4001
-    targetPort: 4001
+    port: 5000
+    targetPort: 5000
   type: ClusterIP
