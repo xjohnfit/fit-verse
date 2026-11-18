@@ -45,7 +45,7 @@ export const ShareTemplateModal: React.FC<ShareTemplateModalProps> = ({
     const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
     const { userInfo } = useSelector((state: RootState) => state.auth);
-    const { data: followingData, isLoading } = useGetFollowingQuery(userInfo?._id || '');
+    const { data: followingData, isLoading } = useGetFollowingQuery();
     const [shareTemplate, { isLoading: isSharing }] = useShareTemplateMutation();
 
     const following = followingData || [];

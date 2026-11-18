@@ -528,7 +528,7 @@ const TermsOfService = () => {
                             how we collect, use, and protect your information.
                         </Text>
 
-                        <TouchableOpacity onPress={() => router.push('/settings/privacyPolicy')}>
+                        <TouchableOpacity onPress={() => router.push('/privacyPolicy')}>
                             <Text style={termsOfServiceStyles.linkText}>View Privacy Policy →</Text>
                         </TouchableOpacity>
                     </View>

@@ -29,15 +29,8 @@ import type { WorkoutExercise, WorkoutSet } from '@/types/workout.types';
 import { ExercisePickerModal } from '@/components/workout';
 import createStyles from '@/styles/workout/startWorkoutStyles';
 
-// Configure notification handler - this determines how notifications are presented when app is in foreground
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-        shouldSetBadge: true,
-        shouldShowBanner: true,
-        shouldShowList: true,
-        priority: Notifications.AndroidNotificationPriority.MAX,
-    }),
-});
+// Foreground notification behavior is configured once, app-wide, in app/_layout.tsx.
+// Don't call Notifications.setNotificationHandler here: it replaces the global handler.
 
 type Exercise = Omit<ApiExercise, 'instructions'> & { instructions: string | string[]; };
 
