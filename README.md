@@ -11,7 +11,7 @@
 [![License](https://img.shields.io/badge/license-ISC-orange)](LICENSE)
 [![Docker](https://img.shields.io/badge/docker-enabled-blue)](https://hub.docker.com/r/xjohnfit)
 [![Kubernetes](https://img.shields.io/badge/kubernetes-ready-green)](kubernetes/)
-[![CI/CD](https://img.shields.io/badge/Jenkins-automated-orange)](Jenkinsfile)
+[![CI/CD](https://github.com/xjohnfit/fit-verse/actions/workflows/deploy.yml/badge.svg)](https://github.com/xjohnfit/fit-verse/actions/workflows/deploy.yml)
 
 **[Live Demo](https://fitverse.codewithxjohn.com) • [API Documentation](#-api-documentation) • [Report Bug](https://github.com/xjohnfit/fit-verse/issues) • [Request Feature](https://github.com/xjohnfit/fit-verse/issues)**
 
@@ -59,8 +59,8 @@ To create a vibrant, inclusive fitness community where users can share their jou
 - **📊 Data-Driven Insights**: Visual analytics with interactive charts and historical data
 - **🎨 Modern UX**: React 19, Tailwind CSS 4, Radix UI, dark/light themes
 - **📱 Responsive Design**: Mobile-first approach optimized for all devices
-- **☁️ Cloud-Native**: Docker, Kubernetes, automated CI/CD with Jenkins
-- **🔍 Quality Assurance**: SonarQube analysis, OWASP scanning, Trivy security checks
+- **☁️ Cloud-Native**: Docker, Kubernetes, automated CI/CD with GitHub Actions
+- **🔍 Quality Assurance**: Trivy scanning for vulnerabilities, secrets and misconfigurations on every push
 
 ---
 
@@ -406,9 +406,9 @@ FitVerse uses a modern microservices architecture that separates concerns and en
            ┌─────────────▼────────────┐  ┌──▼────────────────┐
            │   Frontend Service       │  │  Backend API      │
            │   (React SPA)            │  │  (Express.js)     │
-           │   Port: 5173             │  │  Port: 5004       │
+           │   Port: 5173             │  │  Port: 5000       │
            │   Docker: xjohnfit/      │  │  Docker: xjohnfit/│
-           │   fitverse-frontend      │  │  fitverse-api     │
+           │   fitverse-frontend      │  │  fitverse-backend │
            └─────────────┬────────────┘  └──┬────────────────┘
                          │                  │
                          └────────┬─────────┘
@@ -526,10 +526,8 @@ FatSecret Platform API| Nutrition database (500k+ foods)
 Docker                | Containerization
 Docker Compose        | Local multi-container orchestration
 Kubernetes            | Container orchestration
-Jenkins               | CI/CD automation
-SonarQube             | Code quality analysis
-OWASP Dependency Check| Vulnerability scanning
-Trivy Scanner         | Container security scanning
+GitHub Actions        | CI/CD: scan, build, push and deploy on every push to main
+Trivy Scanner         | Vulnerability, secret and misconfiguration scanning
 ```
 
 ### Mobile Technologies
@@ -647,10 +645,6 @@ fit-verse/
 │   ├── 📂 __tests__/
 │   │   └── health.test.ts                   # Jest tests
 │   │
-│   ├── 📂 kubernetes/
-│   │   ├── deployment.yml                   # K8s deployment
-│   │   └── service.yml                      # K8s service
-│   │
 │   ├── .dockerignore                        # Docker ignore rules
 │   ├── .env.development                     # Dev environment vars
 │   ├── .env.production                      # Prod environment vars
@@ -659,11 +653,8 @@ fit-verse/
 │   ├── Dockerfile                           # Multi-stage build
 │   ├── docker-compose.yml                   # Local development
 │   ├── index.ts                             # Express server entry
-│   ├── Jenkinsfile                          # Backend CI/CD pipeline
 │   ├── jest.config.js                       # Jest configuration
-│   ├── owasp-suppressions.xml               # OWASP suppressions
 │   ├── package.json                         # Dependencies
-│   ├── sonar-project.properties             # SonarQube config
 │   └── tsconfig.json                        # TypeScript config
 │
 ├── 📂 frontend/                             # React SPA Service
@@ -777,10 +768,6 @@ fit-verse/
 │   │   ├── main.tsx                         # React entry
 │   │   └── store.ts                         # Redux store
 │   │
-│   ├── 📂 kubernetes/
-│   │   ├── deployment.yml                   # K8s deployment
-│   │   └── service.yml                      # K8s service
-│   │
 │   ├── .env                                 # Dev environment
 │   ├── .env.example                         # Environment template
 │   ├── .env.production                      # Prod environment
@@ -789,7 +776,6 @@ fit-verse/
 │   ├── Dockerfile                           # Multi-stage build
 │   ├── eslint.config.js                     # ESLint config
 │   ├── index.html                           # HTML entry
-│   ├── Jenkinsfile                          # Frontend CI/CD
 │   ├── package.json                         # Dependencies
 │   ├── tsconfig.app.json                    # App TypeScript config
 │   ├── tsconfig.json                        # TypeScript config
@@ -960,7 +946,21 @@ fit-verse/
 │   ├── store.ts                             # Redux store
 │   └── tsconfig.json                        # TypeScript config
 │
+├── 📂 .github/workflows/                    # GitHub Actions
+│   └── deploy.yml                           # CI/CD pipeline (scan, build, deploy)
+│
+├── 📂 kubernetes/                           # Manifests applied by CI
+│   ├── backend-deployment.yml               # API deployment (2 replicas, port 5000)
+│   ├── backend-service.yml                  # API service
+│   ├── cluster-issuer-prod.yml              # Let's Encrypt issuer
+│   ├── cluster-issuer-staging.yml           # Let's Encrypt staging issuer
+│   ├── frontend-deployment.yml              # Web deployment (nginx, port 8080)
+│   ├── frontend-service.yml                 # Web service
+│   └── ingress.yml                          # Traefik ingress + TLS
+│
+├── .gitattributes                           # Line-ending rules (LF)
 ├── .gitignore                               # Git ignore rules
+├── CLAUDE.md                                # Guidance for Claude Code
 ├── CONTRIBUTING.md                          # Contribution guidelines
 └── README.md                                # This file
 ```
@@ -1001,16 +1001,15 @@ nano .env.development
 **Required Environment Variables:**
 ```env
 # Database
-MONGODB_URI=mongodb://localhost:27017/fitverse
-# or MongoDB Atlas: mongodb+srv://username:password@cluster.mongodb.net/fitverse
+MONGO_URI=mongodb://localhost:27017/fit-verse
+# or MongoDB Atlas: mongodb+srv://username:password@cluster.mongodb.net/fit-verse
 
-# JWT
+# JWT (login tokens last 30 days)
 JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters
-JWT_EXPIRES_IN=7d
 
 # Application
 NODE_ENV=development
-PORT=5004
+PORT=5000
 FRONTEND_URL=http://localhost:5173
 
 # Cloudinary (for images)
@@ -1030,7 +1029,7 @@ FATSECRET_CONSUMER_SECRET=your-consumer-secret
 ```bash
 # Start backend server
 npm run dev
-# Backend runs on http://localhost:5004
+# Backend runs on http://localhost:5000
 ```
 
 ### 3️⃣ Frontend Setup
@@ -1051,7 +1050,7 @@ nano .env
 **Required Environment Variables:**
 ```env
 VITE_MODE=development
-VITE_BACKEND_URL=http://localhost:5004
+VITE_BACKEND_URL=http://localhost:5000
 ```
 
 ```bash
@@ -1063,8 +1062,8 @@ npm run dev
 ### 4️⃣ Access Application
 
 - **Frontend**: http://localhost:5173
-- **Backend API**: http://localhost:5004/api
-- **Health Check**: http://localhost:5004/api/health
+- **Backend API**: http://localhost:5000/api
+- **Health Check**: http://localhost:5000/api/health
 
 ### 5️⃣ Create Your First Account
 
@@ -1094,16 +1093,12 @@ npm install
 npm install -g eas-cli
 ```
 
-### 2️⃣ Configure Environment
+### 2️⃣ Choose Which Backend to Use
 
-```bash
-# Create environment file
-cp .env.example .env
+The mobile app has no `.env` file. The `expo.extra.mode` value in `app.json` decides which API it talks to:
 
-# Edit .env with your backend URL
-# EXPO_PUBLIC_BASE_URL=http://localhost:5004  # For emulator
-# EXPO_PUBLIC_BASE_URL=http://YOUR_IP:5004    # For physical device
-```
+- `"production"` (the committed value): the live API at `https://api.fitverse.codewithxjohn.com`
+- Any other value: your local backend on port 5000. The iOS Simulator reaches it at `localhost` and the Android emulator at `10.0.2.2`. Expo Go on a physical device uses `YOUR_IP`, which you set to your computer's LAN IP in `slices/apiSlice.ts` and `hooks/useSocket.ts`.
 
 ### 3️⃣ Start Development Server
 
@@ -1160,17 +1155,17 @@ eas submit --platform android --latest
 cd backend
 
 # Build image
-docker build -t xjohnfit/fitverse-api:latest .
+docker build -t xjohnfit/fitverse-backend:latest .
 
 # Run container
 docker run -d \
-  --name fitverse-api \
-  -p 5004:5004 \
+  --name fitverse-backend \
+  -p 5000:5000 \
   --env-file .env.production \
-  xjohnfit/fitverse-api:latest
+  xjohnfit/fitverse-backend:latest
 
 # View logs
-docker logs -f fitverse-api
+docker logs -f fitverse-backend
 ```
 
 ### Frontend Service
@@ -1184,7 +1179,7 @@ docker build -t xjohnfit/fitverse-frontend:latest .
 # Run container
 docker run -d \
   --name fitverse-frontend \
-  -p 5173:80 \
+  -p 8080:8080 \
   --env-file .env.production \
   xjohnfit/fitverse-frontend:latest
 
@@ -1212,20 +1207,20 @@ docker-compose down -v
 
 ## ☸️ Kubernetes Deployment
 
+Deployment is automatic. Every push to `main` runs the [GitHub Actions pipeline](#-cicd-pipeline), which applies the manifests in [`kubernetes/`](kubernetes/). The steps below are the manual equivalent.
+
 ### Prerequisites
 
-- Kubernetes cluster (local or cloud)
-- kubectl configured
-- Docker images pushed to registry
+- A Kubernetes cluster with the Traefik ingress controller and cert-manager
+- kubectl configured for that cluster
+- Images pushed to Docker Hub (`xjohnfit/fitverse-backend`, `xjohnfit/fitverse-frontend`)
 
-### Backend Deployment
+### Manual Deployment
 
 ```bash
-cd backend/kubernetes
-
-# Create secrets
-kubectl create secret generic fitverse-api-secrets \
-  --from-literal=MONGODB_URI="your-mongodb-uri" \
+# Create the secret the backend reads its environment from
+kubectl create secret generic fitverse-secrets \
+  --from-literal=MONGO_URI="your-mongodb-uri" \
   --from-literal=JWT_SECRET="your-jwt-secret" \
   --from-literal=CLOUDINARY_CLOUD_NAME="your-cloud-name" \
   --from-literal=CLOUDINARY_API_KEY="your-api-key" \
@@ -1233,32 +1228,16 @@ kubectl create secret generic fitverse-api-secrets \
   --from-literal=FATSECRET_CONSUMER_KEY="your-consumer-key" \
   --from-literal=FATSECRET_CONSUMER_SECRET="your-consumer-secret"
 
-# Deploy backend
-kubectl apply -f deployment.yml
-kubectl apply -f service.yml
+# Apply the certificate issuers, deployments, services and ingress
+kubectl apply -f kubernetes/
 
 # Verify
-kubectl get pods
-kubectl get svc
+kubectl get pods -l app=fitverse-backend
+kubectl get pods -l app=fitverse-frontend
+kubectl get ingress fitverse-ingress
 ```
 
-### Frontend Deployment
-
-```bash
-cd frontend/kubernetes
-
-# Create config
-kubectl create configmap fitverse-frontend-config \
-  --from-literal=VITE_BACKEND_URL="https://api.fitverse.codewithxjohn.com"
-
-# Deploy frontend
-kubectl apply -f deployment.yml
-kubectl apply -f service.yml
-
-# Verify
-kubectl get pods
-kubectl get svc
-```
+The frontend needs no runtime config, because production builds call `https://api.fitverse.codewithxjohn.com` directly.
 
 ### Ingress Configuration
 
@@ -1286,9 +1265,9 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: fitverse-api
+            name: fitverse-backend
             port:
-              number: 5004
+              number: 5000
 ```
 
 ---
@@ -1381,54 +1360,49 @@ npm run test:e2e
 
 ## 📊 CI/CD Pipeline
 
-Both backend and frontend have separate Jenkins pipelines for independent deployment.
+The web app and API are deployed by GitHub Actions ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)). The mobile app is built and released separately with EAS (see [Mobile App Setup](#-mobile-app-setup)).
 
-### Backend Pipeline ([backend/Jenkinsfile](backend/Jenkinsfile))
+### When It Runs
 
-```groovy
-Stages:
-1. Clean Workspace
-2. Checkout from Git
-3. Install Dependencies
-4. Lint Code
-5. Run Tests
-6. Build TypeScript
-7. SonarQube Analysis
-8. Quality Gate
-9. OWASP Dependency Check
-10. Docker Build
-11. Trivy Security Scan
-12. Push to Docker Hub
-13. Update Kubernetes Deployment
-14. Cleanup
+- **Push to `main`**: the full pipeline (scan, build and deploy). It's skipped when a push only changes `kubernetes/**`, `README.md` or `.gitignore`.
+- **Pull request to `main`**: the security scan only.
+
+### Jobs
+
+```text
+1. trivy-scan       Scan the repo for vulnerable dependencies, committed secrets and
+                    misconfigurations (results are reported; the job never fails the build)
+2. build-and-push   Build the backend and frontend Docker images and push them to
+                    Docker Hub as xjohnfit/fitverse-backend and xjohnfit/fitverse-frontend
+                    (tags: main-<short sha> and latest)
+3. deploy           Recreate the fitverse-secrets Kubernetes secret from GitHub secrets,
+                    kubectl apply the manifests in kubernetes/, point both deployments at
+                    the main-<short sha> images, and wait for the rollout to finish
 ```
 
-### Frontend Pipeline ([frontend/Jenkinsfile](frontend/Jenkinsfile))
+The TypeScript compile inside each Docker build is the pipeline's only code check. It doesn't run lint or tests yet.
 
-```groovy
-Stages:
-1. Clean Workspace
-2. Checkout from Git
-3. Install Dependencies
-4. Lint Code
-5. Build with Vite
-6. SonarQube Analysis
-7. Quality Gate
-8. Docker Build
-9. Trivy Security Scan
-10. Push to Docker Hub
-11. Update Kubernetes Deployment
-12. Cleanup
-```
+### Required GitHub Secrets
 
-### Running Pipelines
+| Secret | Used for |
+| --- | --- |
+| `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN` | Pushing images to Docker Hub |
+| `KUBECONFIG` | Base64-encoded kubeconfig for the cluster |
+| `MONGO_URI`, `JWT_SECRET` | Backend database and auth |
+| `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | Image uploads |
+| `FATSECRET_CONSUMER_KEY`, `FATSECRET_CONSUMER_SECRET` | Nutrition search |
+
+### Running the Pipeline
 
 ```bash
-# Trigger backend pipeline
-curl -X POST http://jenkins-server/job/fitverse-backend/build
+# Deploy by pushing to main
+git push origin main
 
-# Trigger frontend pipeline
-curl -X POST http://jenkins-server/job/fitverse-frontend/build
+# Watch a run
+gh run watch
+
+# Re-run a failed run
+gh run rerun <run-id>
 ```
 
 ---
@@ -1450,10 +1424,8 @@ curl -X POST http://jenkins-server/job/fitverse-frontend/build
 
 ### Security Scanning
 
-- **OWASP Dependency Check**: Automated vulnerability scanning
-- **Trivy**: Container and filesystem security analysis
-- **SonarQube**: Code security analysis
-- **npm audit**: Regular dependency audits
+- **Trivy**: Scans the repository for vulnerable dependencies, committed secrets and misconfigurations on every push and pull request (reported, not blocking)
+- **npm audit**: Run manually in each app folder
 
 ### Best Practices
 
@@ -1470,7 +1442,7 @@ curl -X POST http://jenkins-server/job/fitverse-frontend/build
 ### Base URLs
 
 ```
-Development: http://localhost:5004/api
+Development: http://localhost:5000/api
 Production: https://api.fitverse.codewithxjohn.com/api
 ```
 
