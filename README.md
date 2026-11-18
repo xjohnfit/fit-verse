@@ -651,7 +651,6 @@ fit-verse/
 │   ├── .env.example                         # Environment template
 │   ├── apiLandingScreen.ts                  # API landing page
 │   ├── Dockerfile                           # Multi-stage build
-│   ├── docker-compose.yml                   # Local development
 │   ├── index.ts                             # Express server entry
 │   ├── jest.config.js                       # Jest configuration
 │   ├── package.json                         # Dependencies
@@ -772,7 +771,6 @@ fit-verse/
 │   ├── .env.example                         # Environment template
 │   ├── .env.production                      # Prod environment
 │   ├── components.json                      # Radix UI config
-│   ├── docker-compose.yml                   # Local development
 │   ├── Dockerfile                           # Multi-stage build
 │   ├── eslint.config.js                     # ESLint config
 │   ├── index.html                           # HTML entry
@@ -962,6 +960,7 @@ fit-verse/
 ├── .gitignore                               # Git ignore rules
 ├── CLAUDE.md                                # Guidance for Claude Code
 ├── CONTRIBUTING.md                          # Contribution guidelines
+├── docker-compose.yml                       # Local MongoDB for development
 └── README.md                                # This file
 ```
 
@@ -973,7 +972,7 @@ fit-verse/
 
 - **Node.js** 20.x or higher
 - **npm** or **yarn**
-- **MongoDB** (local or MongoDB Atlas)
+- **Docker Desktop** (runs the local MongoDB from `docker-compose.yml`)
 - **Git**
 
 ### 1️⃣ Clone Repository
@@ -986,6 +985,9 @@ cd fit-verse
 ### 2️⃣ Backend Setup
 
 ```bash
+# Start the local MongoDB (run from the project root)
+docker compose up -d
+
 cd backend
 
 # Install dependencies
@@ -1000,9 +1002,10 @@ nano .env.development
 
 **Required Environment Variables:**
 ```env
-# Database
-MONGO_URI=mongodb://localhost:27017/fit-verse
-# or MongoDB Atlas: mongodb+srv://username:password@cluster.mongodb.net/fit-verse
+# Database: the local MongoDB from docker-compose.yml.
+# Use 127.0.0.1, not localhost: Node may resolve localhost to IPv6, which Docker isn't listening on.
+# Production uses MongoDB Atlas; its connection string comes from GitHub secrets, not this file.
+MONGO_URI=mongodb://127.0.0.1:27017/fit-verse
 
 # JWT (login tokens last 30 days)
 JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters
@@ -1187,20 +1190,25 @@ docker run -d \
 docker logs -f fitverse-frontend
 ```
 
-### Docker Compose (Local Development)
+### Docker Compose (Local Database)
+
+`docker-compose.yml` at the project root runs MongoDB 8 for local development. It only accepts connections from your own machine (`127.0.0.1:27017`) and keeps its data in a Docker volume. The backend and frontend themselves run with `npm run dev`, and production uses MongoDB Atlas instead. The local database starts empty.
 
 ```bash
-# Start all services
-docker-compose up -d
+# Start the database in the background
+docker compose up -d
 
-# View logs
-docker-compose logs -f
+# Check that it's healthy
+docker compose ps
 
-# Stop services
-docker-compose down
+# Follow the database logs
+docker compose logs -f mongodb
 
-# Clean slate
-docker-compose down -v
+# Stop it (keeps the data)
+docker compose stop
+
+# Delete the container and all local data
+docker compose down -v
 ```
 
 ---

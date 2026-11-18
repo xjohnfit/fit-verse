@@ -8,16 +8,16 @@ FitVerse is a fitness social app: one Express + MongoDB API (`backend/`) serving
 
 - Live: web at <https://fitverse.codewithxjohn.com>, API at <https://api.fitverse.codewithxjohn.com>, iOS through TestFlight (EAS).
 - The code was generated in 2025 with an older AI tool and predates the owner's current conventions (see [Legacy patterns](#legacy-patterns)).
-- Some sections of `README.md` are still out of date: Docker Compose, the root-level "Full Stack Development" commands, parts of the project tree, and some security notes. Trust the code and this file.
+- Some sections of `README.md` are still out of date: the root-level "Full Stack Development" commands, parts of the project tree, and some security notes. Trust the code and this file.
 
 ## Commands
 
-|           | backend/                                         | frontend/                                | mobile/                                  |
-| --------- | ------------------------------------------------ | ---------------------------------------- | ---------------------------------------- |
-| Dev       | `npm run dev` (nodemon + ts-node, port 5000)     | `npm run dev` (Vite, port 5173)          | `npx expo start` (`-c` clears the cache) |
-| Typecheck | `npm run build` (tsc → `dist/`)                  | `npm run build` (`tsc -b && vite build`) | `npx tsc --noEmit`                       |
-| Lint      | broken: ESLint isn't installed and has no config | `npm run lint`                           | `npm run lint` (expo lint)               |
-| Tests     | `npm test` (Jest + ts-jest + supertest)          | none (`npm test` is a stub)              | none                                     |
+|           | backend/                                                                              | frontend/                                | mobile/                                  |
+| --------- | ------------------------------------------------------------------------------------- | ---------------------------------------- | ---------------------------------------- |
+| Dev       | `docker compose up -d` (repo root), then `npm run dev` (nodemon + ts-node, port 5000) | `npm run dev` (Vite, port 5173)          | `npx expo start` (`-c` clears the cache) |
+| Typecheck | `npm run build` (tsc → `dist/`)                                                       | `npm run build` (`tsc -b && vite build`) | `npx tsc --noEmit`                       |
+| Lint      | broken: ESLint isn't installed and has no config                                      | `npm run lint`                           | `npm run lint` (expo lint)               |
+| Tests     | `npm test` (Jest + ts-jest + supertest)                                               | none (`npm test` is a stub)              | none                                     |
 
 - Run a single backend test with `npx jest __tests__/health.test.ts` or `npx jest -t "<test name>"`. The only test file is `backend/__tests__/health.test.ts`. It mounts routes on a bare Express app and needs no database.
 - Lint is not a clean baseline: the web app has about 150 problems (mostly `no-explicit-any`) and mobile about 85. CI runs neither lint nor tests. Its only check is the TypeScript compile inside the Docker builds.
@@ -28,7 +28,11 @@ FitVerse is a fitness social app: one Express + MongoDB API (`backend/`) serving
 ## Local environment
 
 - The backend loads `.env.production` when `NODE_ENV=production` and `.env.development` otherwise (the keys are listed in `backend/.env.example`). The web app reads `frontend/.env` (`VITE_MODE`, `VITE_BACKEND_URL`). Mobile has no env file.
-- **As of 2026-11-18, `backend/.env.development` uses the production Atlas database** (same cluster, same `fit-verse` database). Don't start the backend locally or run scripts that write data until a local database exists.
+- **Local database:** MongoDB 8 runs in Docker from `docker-compose.yml` at the repo root. It's bound to `127.0.0.1:27017` and keeps its data in the `fit-verse_mongodb-data` volume.
+  - Start it with `docker compose up -d` before `npm run dev`, and stop it with `docker compose stop`. There's no restart policy, so it stays stopped after Docker restarts until you start it again.
+  - `backend/.env.development` points at `mongodb://127.0.0.1:27017/fit-verse`. Use `127.0.0.1`, not `localhost`: Node can resolve `localhost` to IPv6 `::1`, where Docker isn't listening.
+  - The exercise library (46 documents) was copied from production on 2026-11-18. Everything else starts empty, and `npm run seed:users` is safe to run against it.
+- **Production database:** `backend/.env.production` holds a working Atlas login for the live database, so anything that reads it (for example, running with `NODE_ENV=production`) changes real data. The deployed API gets its own login from the GitHub secret `MONGO_URI`.
 - **Dev ports:** the API listens on 5000 and the web app on 5173. Vite has `strictPort` set, so it exits instead of moving to another port; that matters because the backend's Socket.IO origin list expects exactly 5173.
   - The web `.env` points at `localhost:5000`.
   - Mobile dev mode also uses port 5000: `localhost` on the iOS Simulator, `10.0.2.2` on the Android emulator, and the hard-coded LAN IP `192.168.4.53` for Expo Go on a device (set in `mobile/slices/apiSlice.ts` and `mobile/hooks/useSocket.ts`).
@@ -118,4 +122,4 @@ The code predates the owner's current defaults. Point these out when you touch t
 - **Outdated tooling:** `express-async-handler` (unnecessary on Express 5), and ts-node + nodemon instead of tsx.
 - **Typing:** `any` is widespread, and most RTK Query endpoints are untyped `builder.query({...})` calls.
 - **Old versions:** the Docker images use Node 20 (end of life April 2026), and mobile is on Expo SDK 54 (the latest is 58).
-- **Nothing local:** no Docker Compose, no local database, and no frontend or mobile tests.
+- **Missing tests:** the web and mobile apps have none.

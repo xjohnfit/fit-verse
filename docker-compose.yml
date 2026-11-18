@@ -1,0 +1,20 @@
+# Local development database for FitVerse.
+# Production uses MongoDB Atlas; this container only runs on your machine.
+name: fit-verse
+
+services:
+  mongodb:
+    image: mongo:8
+    container_name: fit-verse-mongodb
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mongodb-data:
