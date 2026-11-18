@@ -276,7 +276,7 @@ const PrivacyPolicy = () => {
                                 <p className='pt-2'>
                                     To exercise these rights, please contact us through our{' '}
                                     <a
-                                        href='https://github.com/xjohnfit/mern-fit-verse/issues'
+                                        href='https://github.com/xjohnfit/fit-verse/issues'
                                         target='_blank'
                                         rel='noopener noreferrer'
                                         className='text-blue-600 dark:text-blue-400 hover:underline'
@@ -393,7 +393,7 @@ const PrivacyPolicy = () => {
                                     <li>
                                         GitHub Issues:{' '}
                                         <a
-                                            href='https://github.com/xjohnfit/mern-fit-verse/issues'
+                                            href='https://github.com/xjohnfit/fit-verse/issues'
                                             target='_blank'
                                             rel='noopener noreferrer'
                                             className='text-blue-600 dark:text-blue-400 hover:underline'
@@ -404,7 +404,7 @@ const PrivacyPolicy = () => {
                                     <li>
                                         Project Repository:{' '}
                                         <a
-                                            href='https://github.com/xjohnfit/mern-fit-verse'
+                                            href='https://github.com/xjohnfit/fit-verse'
                                             target='_blank'
                                             rel='noopener noreferrer'
                                             className='text-blue-600 dark:text-blue-400 hover:underline'

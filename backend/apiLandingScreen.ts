@@ -457,7 +457,7 @@ const apiLandingScreen = (req: Request, res: Response) => {
                 <h1>Build Amazing Fitness Apps</h1>
                 <p class="hero-subtitle">A powerful, modern REST API for social fitness platforms. Access comprehensive endpoints for authentication, social networking, nutrition tracking, and workout management.</p>
                 <div class="cta-buttons">
-                    <a href="https://github.com/xjohnfit/mern-fit-verse" class="btn btn-primary" target="_blank">📚 Documentation</a>
+                    <a href="https://github.com/xjohnfit/fit-verse" class="btn btn-primary" target="_blank">📚 Documentation</a>
                     <a href="https://fitverse.codewithxjohn.com" class="btn btn-secondary" target="_blank">🌐 Live Demo</a>
                     <a href="/api/health" class="btn btn-secondary">💚 Health Check</a>
                 </div>
@@ -602,7 +602,7 @@ const apiLandingScreen = (req: Request, res: Response) => {
         <footer class="footer">
             <div class="footer-links">
                 <a href="https://fitverse.codewithxjohn.com" target="_blank">Live App</a>
-                <a href="https://github.com/xjohnfit/mern-fit-verse" target="_blank">GitHub</a>
+                <a href="https://github.com/xjohnfit/fit-verse" target="_blank">GitHub</a>
                 <a href="/api/health">Health Check</a>
             </div>
             <p>Built with ❤️ by <strong>John Winchester</strong></p>

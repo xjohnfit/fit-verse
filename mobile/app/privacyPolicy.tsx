@@ -641,7 +641,7 @@ const PrivacyPolicy = () => {
 
                         <TouchableOpacity
                             onPress={() =>
-                                openLink('https://github.com/xjohnfit/mern-fit-verse/issues')
+                                openLink('https://github.com/xjohnfit/fit-verse/issues')
                             }
                             style={privacyPolicyStyles.contactButton}
                         >
@@ -663,7 +663,7 @@ const PrivacyPolicy = () => {
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            onPress={() => openLink('https://github.com/xjohnfit/mern-fit-verse')}
+                            onPress={() => openLink('https://github.com/xjohnfit/fit-verse')}
                             style={privacyPolicyStyles.contactButton}
                         >
                             <Ionicons

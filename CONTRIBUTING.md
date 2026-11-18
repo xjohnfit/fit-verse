@@ -21,12 +21,12 @@ By participating in this project, you agree to abide by our [Code of Conduct](CO
 1. **Fork the repository** to your GitHub account
 2. **Clone your fork** locally:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/mern-fit-verse.git
-   cd mern-fit-verse
+   git clone https://github.com/YOUR_USERNAME/fit-verse.git
+   cd fit-verse
    ```
 3. **Add upstream remote**:
    ```bash
-   git remote add upstream https://github.com/xjohnfit/mern-fit-verse.git
+   git remote add upstream https://github.com/xjohnfit/fit-verse.git
    ```
 4. **Create a new branch** for your feature:
    ```bash

@@ -157,7 +157,7 @@ const Footer = () => {
                                 </li>
                                 <li>
                                     <a
-                                        href='https://github.com/xjohnfit/mern-fit-verse/blob/main/CONTRIBUTING.md'
+                                        href='https://github.com/xjohnfit/fit-verse/blob/main/CONTRIBUTING.md'
                                         target='_blank'
                                         rel='noopener noreferrer'
                                         className='text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-xs sm:text-sm'
@@ -167,7 +167,7 @@ const Footer = () => {
                                 </li>
                                 <li>
                                     <a
-                                        href='https://github.com/xjohnfit/mern-fit-verse/issues'
+                                        href='https://github.com/xjohnfit/fit-verse/issues'
                                         target='_blank'
                                         rel='noopener noreferrer'
                                         className='text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-xs sm:text-sm'

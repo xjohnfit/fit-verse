@@ -168,7 +168,7 @@ const TermsOfService = () => {
                                     This Platform is an open-source project licensed under the ISC License.
                                     The source code is available on{' '}
                                     <a
-                                        href='https://github.com/xjohnfit/mern-fit-verse'
+                                        href='https://github.com/xjohnfit/fit-verse'
                                         target='_blank'
                                         rel='noopener noreferrer'
                                         className='text-blue-600 dark:text-blue-400 hover:underline'
@@ -253,7 +253,7 @@ const TermsOfService = () => {
                                     <li>
                                         GitHub Issues:{' '}
                                         <a
-                                            href='https://github.com/xjohnfit/mern-fit-verse/issues'
+                                            href='https://github.com/xjohnfit/fit-verse/issues'
                                             target='_blank'
                                             rel='noopener noreferrer'
                                             className='text-blue-600 dark:text-blue-400 hover:underline'
@@ -264,7 +264,7 @@ const TermsOfService = () => {
                                     <li>
                                         Project Repository:{' '}
                                         <a
-                                            href='https://github.com/xjohnfit/mern-fit-verse'
+                                            href='https://github.com/xjohnfit/fit-verse'
                                             target='_blank'
                                             rel='noopener noreferrer'
                                             className='text-blue-600 dark:text-blue-400 hover:underline'

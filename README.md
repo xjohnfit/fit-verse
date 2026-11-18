@@ -6,14 +6,14 @@
 
 **A Modern Full-Stack Social Fitness Platform with Microservices Architecture**
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/xjohnfit/mern-fit-verse)
-[![Version](https://img.shields.io/badge/version-2.5.0-blue)](https://github.com/xjohnfit/mern-fit-verse)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/xjohnfit/fit-verse)
+[![Version](https://img.shields.io/badge/version-2.5.0-blue)](https://github.com/xjohnfit/fit-verse)
 [![License](https://img.shields.io/badge/license-ISC-orange)](LICENSE)
 [![Docker](https://img.shields.io/badge/docker-enabled-blue)](https://hub.docker.com/r/xjohnfit)
 [![Kubernetes](https://img.shields.io/badge/kubernetes-ready-green)](kubernetes/)
 [![CI/CD](https://img.shields.io/badge/Jenkins-automated-orange)](Jenkinsfile)
 
-**[Live Demo](https://fitverse.codewithxjohn.com) • [API Documentation](#-api-documentation) • [Report Bug](https://github.com/xjohnfit/mern-fit-verse/issues) • [Request Feature](https://github.com/xjohnfit/mern-fit-verse/issues)**
+**[Live Demo](https://fitverse.codewithxjohn.com) • [API Documentation](#-api-documentation) • [Report Bug](https://github.com/xjohnfit/fit-verse/issues) • [Request Feature](https://github.com/xjohnfit/fit-verse/issues)**
 
 </div>
 
@@ -580,7 +580,7 @@ EAS Update            | OTA updates
 ## 📁 Project Structure
 
 ```
-mern-fit-verse/
+fit-verse/
 ├── 📂 backend/                              # Express.js API Service
 │   ├── 📂 config/
 │   │   ├── cloudinary.ts                    # Cloudinary SDK configuration
@@ -979,8 +979,8 @@ mern-fit-verse/
 ### 1️⃣ Clone Repository
 
 ```bash
-git clone https://github.com/xjohnfit/mern-fit-verse.git
-cd mern-fit-verse
+git clone https://github.com/xjohnfit/fit-verse.git
+cd fit-verse
 ```
 
 ### 2️⃣ Backend Setup
@@ -1619,7 +1619,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for deta
 ```bash
 # Fork repository
 # Clone your fork
-git clone https://github.com/YOUR_USERNAME/mern-fit-verse.git
+git clone https://github.com/YOUR_USERNAME/fit-verse.git
 
 # Create feature branch
 git checkout -b feature/amazing-feature
@@ -1733,8 +1733,8 @@ chore: update dependencies
 
 ## 📞 Support & Contact
 
-- **Issues**: [GitHub Issues](https://github.com/xjohnfit/mern-fit-verse/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/xjohnfit/mern-fit-verse/discussions)
+- **Issues**: [GitHub Issues](https://github.com/xjohnfit/fit-verse/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/xjohnfit/fit-verse/discussions)
 - **Email**: [xjohnfitcodes@gmail.com](mailto:xjohnfitcodes@gmail.com)
 - **Portfolio**: [codewithxjohn.com](https://codewithxjohn.com)
 
@@ -1783,9 +1783,9 @@ Special thanks to:
 
 ⭐ **Star this repository if you found it helpful!**
 
-[![GitHub stars](https://img.shields.io/github/stars/xjohnfit/mern-fit-verse?style=social)](https://github.com/xjohnfit/mern-fit-verse/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/xjohnfit/mern-fit-verse?style=social)](https://github.com/xjohnfit/mern-fit-verse/network/members)
-[![GitHub watchers](https://img.shields.io/github/watchers/xjohnfit/mern-fit-verse?style=social)](https://github.com/xjohnfit/mern-fit-verse/watchers)
+[![GitHub stars](https://img.shields.io/github/stars/xjohnfit/fit-verse?style=social)](https://github.com/xjohnfit/fit-verse/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/xjohnfit/fit-verse?style=social)](https://github.com/xjohnfit/fit-verse/network/members)
+[![GitHub watchers](https://img.shields.io/github/watchers/xjohnfit/fit-verse?style=social)](https://github.com/xjohnfit/fit-verse/watchers)
 
 **[⬆ Back to Top](#-mern-fitverse)**
 

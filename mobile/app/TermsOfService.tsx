@@ -395,7 +395,7 @@ const TermsOfService = () => {
                         </Text>
 
                         <TouchableOpacity
-                            onPress={() => openLink('https://github.com/xjohnfit/mern-fit-verse')}
+                            onPress={() => openLink('https://github.com/xjohnfit/fit-verse')}
                         >
                             <Text style={termsOfServiceStyles.linkText}>View on GitHub →</Text>
                         </TouchableOpacity>
@@ -567,7 +567,7 @@ const TermsOfService = () => {
 
                         <TouchableOpacity
                             onPress={() =>
-                                openLink('https://github.com/xjohnfit/mern-fit-verse/issues')
+                                openLink('https://github.com/xjohnfit/fit-verse/issues')
                             }
                             style={termsOfServiceStyles.contactButton}
                         >
@@ -589,7 +589,7 @@ const TermsOfService = () => {
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            onPress={() => openLink('https://github.com/xjohnfit/mern-fit-verse')}
+                            onPress={() => openLink('https://github.com/xjohnfit/fit-verse')}
                             style={termsOfServiceStyles.contactButton}
                         >
                             <Ionicons
