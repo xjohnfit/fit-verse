@@ -1,0 +1,16 @@
+# Development image: runs the TypeScript source with hot reload.
+# Production still uses backend/Dockerfile (compiled build, non-root user).
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install all dependencies, including dev tools like nodemon and ts-node
+COPY package*.json ./
+RUN npm ci
+
+# docker-compose.yml mounts your source over this at runtime
+COPY . .
+
+EXPOSE 5000
+
+CMD ["npm", "run", "dev"]

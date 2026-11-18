@@ -12,12 +12,12 @@ FitVerse is a fitness social app: one Express + MongoDB API (`backend/`) serving
 
 ## Commands
 
-|           | backend/                                                                              | frontend/                                | mobile/                                  |
-| --------- | ------------------------------------------------------------------------------------- | ---------------------------------------- | ---------------------------------------- |
-| Dev       | `docker compose up -d` (repo root), then `npm run dev` (nodemon + ts-node, port 5000) | `npm run dev` (Vite, port 5173)          | `npx expo start` (`-c` clears the cache) |
-| Typecheck | `npm run build` (tsc → `dist/`)                                                       | `npm run build` (`tsc -b && vite build`) | `npx tsc --noEmit`                       |
-| Lint      | broken: ESLint isn't installed and has no config                                      | `npm run lint`                           | `npm run lint` (expo lint)               |
-| Tests     | `npm test` (Jest + ts-jest + supertest)                                               | none (`npm test` is a stub)              | none                                     |
+|           | backend/                                                                             | frontend/                                | mobile/                                  |
+| --------- | ------------------------------------------------------------------------------------ | ---------------------------------------- | ---------------------------------------- |
+| Dev       | `docker compose up -d --build` (repo root: MongoDB + API with hot reload, port 5000) | `npm run dev` (Vite, port 5173)          | `npx expo start` (`-c` clears the cache) |
+| Typecheck | `npm run build` (tsc → `dist/`)                                                      | `npm run build` (`tsc -b && vite build`) | `npx tsc --noEmit`                       |
+| Lint      | broken: ESLint isn't installed and has no config                                     | `npm run lint`                           | `npm run lint` (expo lint)               |
+| Tests     | `npm test` (Jest + ts-jest + supertest)                                              | none (`npm test` is a stub)              | none                                     |
 
 - Run a single backend test with `npx jest __tests__/health.test.ts` or `npx jest -t "<test name>"`. The only test file is `backend/__tests__/health.test.ts`. It mounts routes on a bare Express app and needs no database.
 - Lint is not a clean baseline: the web app has about 150 problems (mostly `no-explicit-any`) and mobile about 85. CI runs neither lint nor tests. Its only check is the TypeScript compile inside the Docker builds.
@@ -28,10 +28,11 @@ FitVerse is a fitness social app: one Express + MongoDB API (`backend/`) serving
 ## Local environment
 
 - The backend loads `.env.production` when `NODE_ENV=production` and `.env.development` otherwise (the keys are listed in `backend/.env.example`). The web app reads `frontend/.env` (`VITE_MODE`, `VITE_BACKEND_URL`). Mobile has no env file.
-- **Local database:** MongoDB 8 runs in Docker from `docker-compose.yml` at the repo root. It's bound to `127.0.0.1:27017` and keeps its data in the `fit-verse_mongodb-data` volume.
-  - Start it with `docker compose up -d` before `npm run dev`, and stop it with `docker compose stop`. There's no restart policy, so it stays stopped after Docker restarts until you start it again.
-  - `backend/.env.development` points at `mongodb://127.0.0.1:27017/fit-verse`. Use `127.0.0.1`, not `localhost`: Node can resolve `localhost` to IPv6 `::1`, where Docker isn't listening.
-  - The exercise library (46 documents) was copied from production on 2026-11-18. Everything else starts empty, and `npm run seed:users` is safe to run against it.
+- **Local dev stack:** `docker-compose.yml` at the repo root runs MongoDB 8 and the API. `docker compose up -d --build` starts both, and `docker compose stop` stops them. There's no restart policy, so they stay stopped after Docker restarts.
+  - `mongodb` is bound to `127.0.0.1:27017` and keeps its data in the `fit-verse_mongodb-data` volume. The exercise library (46 documents) was copied from production on 2026-11-18. Everything else starts empty, and `npm run seed:users` is safe to run against it.
+  - `backend` is built from `backend/Dockerfile.dev` and runs `npm run dev` (nodemon + ts-node) with `./backend` mounted at `/app`, so saving a file restarts it. An anonymous volume keeps the container's own `node_modules`, so after changing dependencies, run `docker compose up -d --build --renew-anon-volumes`.
+  - The container reads `backend/.env.development` through `env_file`, and Compose overrides `MONGO_URI` to `mongodb://mongodb:27017/fit-verse`. `dotenv` never overwrites variables that are already set, so the app keeps Compose's values.
+  - To run the API on the host instead, start only the database (`docker compose up -d mongodb`), then run `npm run dev` in `backend/`. That uses `.env.development`'s `mongodb://127.0.0.1:27017/fit-verse`. Use `127.0.0.1`, not `localhost`: Node can resolve `localhost` to IPv6 `::1`, where Docker isn't listening. Don't run both at once, since they share port 5000.
 - **Production database:** `backend/.env.production` holds a working Atlas login for the live database, so anything that reads it (for example, running with `NODE_ENV=production`) changes real data. The deployed API gets its own login from the GitHub secret `MONGO_URI`.
 - **Dev ports:** the API listens on 5000 and the web app on 5173. Vite has `strictPort` set, so it exits instead of moving to another port; that matters because the backend's Socket.IO origin list expects exactly 5173.
   - The web `.env` points at `localhost:5000`.

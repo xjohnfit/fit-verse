@@ -651,6 +651,7 @@ fit-verse/
 │   ├── .env.example                         # Environment template
 │   ├── apiLandingScreen.ts                  # API landing page
 │   ├── Dockerfile                           # Multi-stage build
+│   ├── Dockerfile.dev                       # Dev image with hot reload (Compose)
 │   ├── index.ts                             # Express server entry
 │   ├── jest.config.js                       # Jest configuration
 │   ├── package.json                         # Dependencies
@@ -960,7 +961,7 @@ fit-verse/
 ├── .gitignore                               # Git ignore rules
 ├── CLAUDE.md                                # Guidance for Claude Code
 ├── CONTRIBUTING.md                          # Contribution guidelines
-├── docker-compose.yml                       # Local MongoDB for development
+├── docker-compose.yml                       # Local MongoDB + backend for development
 └── README.md                                # This file
 ```
 
@@ -985,12 +986,9 @@ cd fit-verse
 ### 2️⃣ Backend Setup
 
 ```bash
-# Start the local MongoDB (run from the project root)
-docker compose up -d
-
 cd backend
 
-# Install dependencies
+# Install dependencies (for your editor, and for running tests outside Docker)
 npm install
 
 # Create environment file
@@ -1003,7 +1001,9 @@ nano .env.development
 **Required Environment Variables:**
 ```env
 # Database: the local MongoDB from docker-compose.yml.
-# Use 127.0.0.1, not localhost: Node may resolve localhost to IPv6, which Docker isn't listening on.
+# Inside Docker, docker-compose.yml replaces this with mongodb://mongodb:27017/fit-verse.
+# This value is only used when you run the backend outside Docker. Use 127.0.0.1, not
+# localhost: Node may resolve localhost to IPv6, which Docker isn't listening on.
 # Production uses MongoDB Atlas; its connection string comes from GitHub secrets, not this file.
 MONGO_URI=mongodb://127.0.0.1:27017/fit-verse
 
@@ -1030,9 +1030,10 @@ FATSECRET_CONSUMER_SECRET=your-consumer-secret
 - **FatSecret**: [Register at platform.fatsecret.com](https://platform.fatsecret.com/api/Default.aspx?screen=rapih)
 
 ```bash
-# Start backend server
-npm run dev
-# Backend runs on http://localhost:5000
+# Start MongoDB and the backend together (from the project root)
+cd ..
+docker compose up -d --build
+# Backend runs on http://localhost:5000 and restarts when you save a file
 ```
 
 ### 3️⃣ Frontend Setup
@@ -1190,24 +1191,35 @@ docker run -d \
 docker logs -f fitverse-frontend
 ```
 
-### Docker Compose (Local Database)
+### Docker Compose (Local Development)
 
-`docker-compose.yml` at the project root runs MongoDB 8 for local development. It only accepts connections from your own machine (`127.0.0.1:27017`) and keeps its data in a Docker volume. The backend and frontend themselves run with `npm run dev`, and production uses MongoDB Atlas instead. The local database starts empty.
+`docker-compose.yml` at the project root runs the local development stack:
+
+- **mongodb**: MongoDB 8. It only accepts connections from your own machine (`127.0.0.1:27017`), keeps its data in a Docker volume, and starts empty.
+- **backend**: the API, built from `backend/Dockerfile.dev` and served at `http://localhost:5000`. Your `backend/` folder is mounted into the container, so saving a file restarts the server. It reads `backend/.env.development`, except `MONGO_URI`, which points at the `mongodb` service.
+
+The frontend still runs on your machine with `npm run dev`, and production uses MongoDB Atlas.
 
 ```bash
-# Start the database in the background
-docker compose up -d
+# Build the backend image (first time) and start both services in the background
+docker compose up -d --build
 
-# Check that it's healthy
+# Check status: mongodb should say (healthy)
 docker compose ps
 
-# Follow the database logs
-docker compose logs -f mongodb
+# Follow the backend logs
+docker compose logs -f backend
 
-# Stop it (keeps the data)
+# Stop everything (keeps the data)
 docker compose stop
 
-# Delete the container and all local data
+# After adding or removing a backend dependency
+docker compose up -d --build --renew-anon-volumes
+
+# Run only the database, if you'd rather start the backend with npm run dev
+docker compose up -d mongodb
+
+# Delete the containers and all local data
 docker compose down -v
 ```
 
