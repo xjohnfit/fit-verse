@@ -36,9 +36,9 @@ FitVerse is a fitness social app: one Express + MongoDB API (`backend/`) serving
 - **Production database:** `backend/.env.production` holds a working Atlas login for the live database, so anything that reads it (for example, running with `NODE_ENV=production`) changes real data. The deployed API gets its own login from the GitHub secret `MONGO_URI`.
 - **Dev ports:** the API listens on 5000 and the web app on 5173. Vite has `strictPort` set, so it exits instead of moving to another port; that matters because the backend's Socket.IO origin list expects exactly 5173.
   - The web `.env` points at `localhost:5000`.
-  - Mobile dev mode also uses port 5000: `localhost` on the iOS Simulator, `10.0.2.2` on the Android emulator, and the hard-coded LAN IP `192.168.4.53` for Expo Go on a device (set in `mobile/slices/apiSlice.ts` and `mobile/hooks/useSocket.ts`).
+  - Mobile development runs use port 5000 too: `localhost` on the iOS Simulator, `10.0.2.2` on the Android emulator.
   - If the backend fails with `EADDRINUSE`, find what's holding the port with `lsof -nP -iTCP:5000 -sTCP:LISTEN`. On macOS, AirPlay Receiver can also take 5000.
-- Mobile picks its API from `expo.extra.mode` in `mobile/app.json`. The committed value is `"production"`, so a local `expo start` uses the live API and real data.
+- **Mobile API target:** `mobile/lib/apiConfig.ts` chooses it, so nothing needs switching before a release. `npx expo start` (`__DEV__` is true) uses the local backend. Release builds (EAS / TestFlight) use the live API, which the `production` profile in `mobile/eas.json` also pins with `EXPO_PUBLIC_API_URL`. To point a development run elsewhere (the live API, or a LAN IP for a physical phone), set `EXPO_PUBLIC_API_URL` in `mobile/.env.local`, which git ignores, and restart Expo.
 
 ## Backend architecture
 
@@ -90,6 +90,7 @@ FitVerse is a fitness social app: one Express + MongoDB API (`backend/`) serving
 - Expo SDK 54 and React Native 0.81 (New Architecture), with Expo Router 6, typed routes and the React Compiler (both switched on in `app.json` under `experiments`). The native `ios/` and `android/` folders are gitignored, and EAS generates them at build time.
 - `app/_layout.tsx` is the root Stack. It restores `userInfo` from AsyncStorage, refreshes the profile from the API, registers the Expo push token, and sets the app's only notification handler. The tabs live in `app/(tabs)/` (dashboard, profile, chat, nutrition, workout), and `settings` is hidden from the tab bar with `href: null`.
 - The Redux setup matches the web app. Use `hooks/useRedux.ts` (`useAppSelector`, `useAppDispatch`). `authSlice` writes to AsyncStorage inside its reducers, and `slices/apiSlice.ts` logs the user out on any 401.
+- **Backend URL:** `lib/apiConfig.ts` is the only place that chooses it. `slices/apiSlice.ts` (REST, re-exported as `baseUrl` for a few slices) and `hooks/useSocket.ts` (Socket.IO) both import from it.
 - **Styling:** each component has a StyleSheet module at `styles/<area>/<Name>Styles.ts` that default-exports `createStyles(isDark)`. Components call it with `useColorScheme()` inside `useMemo`. Colors are hard-coded hex values with no theme tokens. NativeWind isn't set up, although `tsconfig.json` still lists `nativewind-env.d.ts`.
 - **AsyncStorage keys:** `userInfo`, the in-progress workout (`workout_start_time`, `workout_exercises`, `workout_active_rest_timer`, …), and 24-hour chat caches named `messages_cache_<idA>_<idB>` (`lib/messageCache.ts`).
 - **Notifications:** call `Notifications.setNotificationHandler` only in `app/_layout.tsx`. The handler is global, and a second call replaces it. On iOS, a notification without `content.sound` plays no sound.

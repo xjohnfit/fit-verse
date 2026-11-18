@@ -1097,12 +1097,13 @@ npm install
 npm install -g eas-cli
 ```
 
-### 2️⃣ Choose Which Backend to Use
+### 2️⃣ Which Backend the App Uses
 
-The mobile app has no `.env` file. The `expo.extra.mode` value in `app.json` decides which API it talks to:
+`lib/apiConfig.ts` picks it automatically, so there's nothing to switch before a release:
 
-- `"production"` (the committed value): the live API at `https://api.fitverse.codewithxjohn.com`
-- Any other value: your local backend on port 5000. The iOS Simulator reaches it at `localhost` and the Android emulator at `10.0.2.2`. Expo Go on a physical device uses `YOUR_IP`, which you set to your computer's LAN IP in `slices/apiSlice.ts` and `hooks/useSocket.ts`.
+- **`npx expo start` (development):** your local backend on port 5000. Start it with `docker compose up -d` from the project root. The iOS Simulator reaches it at `localhost` and the Android emulator at `10.0.2.2`.
+- **EAS builds (TestFlight / App Store):** always the live API at `https://api.fitverse.codewithxjohn.com`. The `production` profile in `eas.json` also pins it.
+- **Override:** create `mobile/.env.local` (git ignores it) containing `EXPO_PUBLIC_API_URL=...` to point a development run somewhere else. For example, use the live API to test with your real account, or `http://<your Mac's LAN IP>:5000` on a physical phone. Restart `npx expo start` after changing it.
 
 ### 3️⃣ Start Development Server
 
