@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 FitVerse is a fitness social app: one Express + MongoDB API (`backend/`) serving a React web app (`frontend/`) and an Expo / React Native app (`mobile/`). These are three independent npm projects with no root `package.json` or workspaces, so install and run everything inside each folder.
 
+`design/` holds brand sources, screen designs and marketing images. No app loads anything from it: runtime images stay in `mobile/assets/` and `frontend/public/`. Its `README.md` has the layout and the kebab-case naming rule: marketing goes in `design/marketing/<channel>/<yyyy-mm>-<campaign>/`, with a `prompts.md` holding the prompts that generated the images. The repo is public, so anything committed there is public too.
+
 - Live: web at <https://fitverse.codewithxjohn.com>, API at <https://api.fitverse.codewithxjohn.com>, iOS through TestFlight (EAS).
 - The code was generated in 2025 with an older AI tool and predates the owner's current conventions (see [Legacy patterns](#legacy-patterns)).
 - Some sections of `README.md` are still out of date: the root-level "Full Stack Development" commands, parts of the project tree, and some security notes. Trust the code and this file.
@@ -115,7 +117,7 @@ The RTK Query slices exist twice (`frontend/src/slices/` and `mobile/slices/`), 
   4. `kubectl apply` the `kubernetes/` manifests.
   5. Point the deployments at the `main-<short sha>` images and wait for the rollout.
 
-  Only changes limited to `kubernetes/**`, `README.md` or `.gitignore` skip the workflow, so mobile-only commits still redeploy the web app and API.
+  Only changes limited to `kubernetes/**`, `design/**`, `README.md` or `.gitignore` skip the workflow, so mobile-only commits still redeploy the web app and API.
 - **Cluster:** a Traefik ingress with cert-manager (Let's Encrypt).
   - Backend: 2 replicas on port 5000. Its env comes from the deployment manifest and the secret, never from `.env` files.
   - Frontend: nginx on port 8080 behind a port-80 service.

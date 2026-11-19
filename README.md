@@ -945,6 +945,12 @@ fit-verse/
 │   ├── store.ts                             # Redux store
 │   └── tsconfig.json                        # TypeScript config
 │
+├── 📂 design/                               # Brand, UI and marketing files (not loaded by the apps)
+│   ├── README.md                            # What goes where, naming rules, Figma links
+│   ├── brand/                               # Logo and app icon sources
+│   ├── ui/                                  # Screen designs and mockups (mobile/, web/)
+│   └── marketing/                           # social/<yyyy-mm>-<campaign>/ (images + their prompts.md), web/, app-store/
+│
 ├── 📂 .github/workflows/                    # GitHub Actions
 │   └── deploy.yml                           # CI/CD pipeline (scan, build, deploy)
 │
