@@ -949,7 +949,7 @@ fit-verse/
 │   ├── README.md                            # What goes where, naming rules, Figma links
 │   ├── brand/                               # Logo and app icon sources
 │   ├── ui/                                  # Screen designs and mockups (mobile/, web/)
-│   └── marketing/                           # social/<yyyy-mm>-<campaign>/ (images + their prompts.md), web/, app-store/
+│   └── marketing/                           # social/<yyyy-mm>-<campaign>/ (README.md with the Google Drive link + prompts.md; images live in Drive), web/, app-store/
 │
 ├── 📂 .github/workflows/                    # GitHub Actions
 │   └── deploy.yml                           # CI/CD pipeline (scan, build, deploy)

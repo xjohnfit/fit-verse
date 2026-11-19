@@ -2,7 +2,7 @@
 
 Brand, UI and marketing files for FitVerse. Nothing in this folder is loaded by the apps. Images the apps use at runtime live with each app: `mobile/assets/` for the mobile app and `frontend/public/` for the web app.
 
-```
+```text
 design/
 ├── brand/                         # The identity: logo and app icon sources, colors, fonts
 ├── ui/                            # Screen designs and mockups, grouped by app
@@ -10,7 +10,7 @@ design/
 │   └── web/
 └── marketing/                     # Grouped by channel, then by campaign
     ├── social/
-    │   └── <yyyy-mm>-<campaign>/  # the images + the prompts.md that generated them
+    │   └── <yyyy-mm>-<campaign>/  # README.md (Drive link) + prompts.md; the images live in Google Drive
     ├── web/                       # Link-preview (og) images and landing-page art
     └── app-store/                 # App Store and Google Play screenshots and promo art
 ```
@@ -23,13 +23,24 @@ design/
 
 The repository is public, so anything committed here is visible to everyone as soon as it's pushed. Keep unannounced drafts outside the repo until they're ready to be public.
 
-## Prompts
+## Campaign images live in Google Drive
 
-Always commit the prompts that generated AI images, in a `prompts.md` in the same campaign folder. They're tiny, and they're the real source: any image can be regenerated, fixed or turned into a new variant from its prompt. The prompts for the July 2026 images weren't saved.
+Git keeps every version of every image forever, and each clone downloads all of them, so social campaign images are kept in Google Drive instead, under `My Drive/FitVerse/Marketing/<yyyy-mm>-<campaign>/` ([FitVerse folder](https://drive.google.com/drive/folders/1Th3RHzIylWM3huj1X9k1bJAZywCfyUgx)). The Google Drive desktop app syncs that folder to `~/Library/CloudStorage/GoogleDrive-<account>/My Drive/`, so you can save images straight into it.
 
-## When this gets big
+Each campaign folder here keeps only two text files:
 
-Git keeps every version of every image forever, and each clone downloads all of them. For comparison, Applyze's 30-day social campaign is about 38 MB. Once posting campaigns becomes a regular habit, keep the images in Google Drive (`FitVerse/Marketing/<campaign>/`) and commit only the prompts and a link to the Drive folder.
+- **`README.md`**: the link to the campaign's Drive folder, and a table of the files and what each one is. GitHub shows it when you open the folder. Keep the Drive folder's sharing on "Restricted": this repo is public, so anyone can see the link.
+- **`prompts.md`**: the prompts that generated the images, ready to paste into the image tool. They're tiny, and they're the real source: any image can be regenerated, fixed or turned into a new variant from its prompt.
+
+For a new campaign:
+
+1. Create `My Drive/FitVerse/Marketing/<yyyy-mm>-<campaign>/` and save the images straight into it.
+2. Create the same folder under `design/marketing/social/` with its `README.md` and `prompts.md`.
+3. Commit the two text files.
+
+`.gitignore` blocks images and videos under `design/marketing/social/`, so they can't be committed by accident. Never move this repo, or link `design/`, into the Drive folder: like iCloud, the sync creates conflict copies and can damage `.git`.
+
+The two July 2026 promos were committed before this rule, so they're still in git history.
 
 ## Naming
 
@@ -45,8 +56,7 @@ Git keeps every version of every image forever, and each clone downloads all of 
 | `brand/app-icon-v2-glow.png` | The same icon with a glow, 1024×1024 |
 | `ui/mobile/landing-screen.png` | Design of the mobile landing screen |
 | `ui/mobile/landing-screen-mockup.png` | The landing screen in an iPhone frame (concept art; its text has typos) |
-| `marketing/social/2026-07-launch/promo-landscape.png` | Launch promo, 3:2 |
-| `marketing/social/2026-07-launch/promo-square.png` | Launch promo, 1:1 |
+| `marketing/social/2026-07-launch/` | Launch promos (3:2 and 1:1), in [Google Drive](https://drive.google.com/drive/folders/1jlcicGphp7JqK3eHAaZTh-Tlt_S3E6sZ) |
 
 The app icon the mobile app ships is `mobile/assets/fit-verse-logo.png` (set in `mobile/app.json`). A store-ready icon must be a full-bleed 1024×1024 square with no transparency or rounded corners, because iOS applies its own mask. There's no vector (SVG) version of the logo yet; the Figma pass should produce one.
 

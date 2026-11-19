@@ -52,3 +52,13 @@ coverage/
 # Package lock files (choose one)
 #package-lock.json
 # yarn.lock
+
+# Campaign images live in Google Drive (My Drive/FitVerse/Marketing/<campaign>/).
+# Only each campaign's README.md (with the Drive link) and prompts are committed. See design/README.md.
+design/marketing/social/**/*.png
+design/marketing/social/**/*.jpg
+design/marketing/social/**/*.jpeg
+design/marketing/social/**/*.webp
+design/marketing/social/**/*.gif
+design/marketing/social/**/*.mp4
+design/marketing/social/**/*.mov
