@@ -2,21 +2,22 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
   Image,
   StatusBar,
+  useWindowDimensions,
 } from "react-native";
 import { Redirect, useRouter } from "expo-router";
 import { useAppSelector } from "../hooks/useRedux";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import FeatureCard from "@/components/onboarding/FeatureCard";
+import WaveBackground from "@/components/onboarding/WaveBackground";
 import LandingStyles from "@/styles/onboarding/landingStyles";
 
 export default function LandingPage() {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { width, height } = useWindowDimensions();
   const styles = LandingStyles();
 
   // Redirect authenticated users to home
@@ -25,97 +26,54 @@ export default function LandingPage() {
   }
 
   return (
-    <LinearGradient
-      colors={["#0f172a", "#1e3a8a", "#3b82f6"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-      style={styles.container}
-    >
-      <StatusBar barStyle="light-content" backgroundColor="#0f172a" />
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
       <View style={{ height: insets.top }} />
-      <ScrollView
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingBottom: 20 + insets.bottom }
-        ]}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <View style={styles.headerSection}>
-          <View style={styles.logoContainer}>
-            <Image
-              source={require("../assets/fit-verse-logo-no-bg.png")}
-              style={styles.logo}
-              resizeMode="contain"
-            />
-          </View>
-          <Text style={styles.title}>
-            FitVerse
-          </Text>
-          <Text style={styles.subtitle}>
-            Your Complete Fitness Universe
-          </Text>
+
+      {/* Flowing wave background */}
+      <View style={[styles.waveContainer, { height: height * 0.42 }]}>
+        <WaveBackground width={width} height={height * 0.42} />
+      </View>
+
+      {/* Center content */}
+      <View style={styles.centerSection}>
+        <View style={styles.logoContainer}>
+          <Image
+            source={require("../assets/fit-verse-logo-no-bg.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
         </View>
+        <Text style={styles.title}>FITVERSE</Text>
+        <Text style={styles.subtitle}>
+          YOUR FITNESS.{"\n"}YOUR UNIVERSE.
+        </Text>
+      </View>
 
-        {/* Hero Section */}
-        <View style={styles.heroSection}>
-          <Text style={styles.heroText}>
-            Transform your fitness journey with personalized workouts, nutrition
-            tracking, and a supportive community.
-          </Text>
-
-          {/* Features Grid */}
-          <View style={styles.featuresContainer}>
-            <FeatureCard
-              icon="barbell"
-              title="Custom Workouts"
-              description="Create and track personalized workout routines"
-            />
-            <FeatureCard
-              icon="nutrition"
-              title="Nutrition Tracking"
-              description="Monitor your daily meals and calories"
-            />
-            <FeatureCard
-              icon="people"
-              title="Community"
-              description="Connect with fitness enthusiasts worldwide"
-            />
-            <FeatureCard
-              icon="stats-chart"
-              title="Progress Analytics"
-              description="Visualize your fitness journey with detailed stats"
-            />
-          </View>
-        </View>
-
-        {/* CTA Buttons */}
-        <View style={styles.ctaSection}>
-          <TouchableOpacity
-            onPress={() => router.push("/register")}
+      {/* CTA Buttons */}
+      <View style={[styles.ctaSection, { paddingBottom: 20 + insets.bottom }]}>
+        <TouchableOpacity
+          onPress={() => router.push("/register")}
+          activeOpacity={0.85}
+        >
+          <LinearGradient
+            colors={["#22c1ff", "#e83fe8"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
             style={styles.primaryButton}
-            activeOpacity={0.8}
           >
-            <Text style={styles.primaryButtonText}>
-              Get Started
-            </Text>
-          </TouchableOpacity>
+            <Text style={styles.primaryButtonText}>Get Started</Text>
+          </LinearGradient>
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => router.push("/login")}
-            style={styles.secondaryButton}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.secondaryButtonText}>
-              Sign In
-            </Text>
-          </TouchableOpacity>
-
-          <Text style={styles.footerText}>
-            Join thousands of users achieving their fitness goals
-          </Text>
-        </View>
-      </ScrollView>
-    </LinearGradient>
+        <TouchableOpacity
+          onPress={() => router.push("/login")}
+          style={styles.secondaryButton}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.secondaryButtonText}>Log In</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }

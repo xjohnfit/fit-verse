@@ -41,7 +41,7 @@ const SettingsScreen = () => {
           try {
             await logout().unwrap();
             dispatch(clearCredentials());
-            router.replace('/login');
+            router.replace('/');
           } catch (error) {
             console.error('Logout failed:', error);
           }

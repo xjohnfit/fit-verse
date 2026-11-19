@@ -1,5 +1,5 @@
 // React
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 // Third-party libraries
 import { Stack } from 'expo-router';
@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
+import * as SplashScreen from 'expo-splash-screen';
 
 // Local imports
 import store from '../store';
@@ -15,6 +16,7 @@ import { useSocket } from '../hooks/useSocket';
 import { registerForPushNotificationsAsync } from '../lib/notifications';
 import * as Notifications from 'expo-notifications';
 import { useAppSelector, useAppDispatch } from '../hooks/useRedux';
+import AppSplashScreen from '@/components/onboarding/SplashScreen';
 
 import { useUpdatePushTokenMutation } from '../slices/notificationApiSlice';
 import { useGetUserProfileQuery } from '../slices/usersApiSlice';
@@ -25,8 +27,13 @@ Notifications.setNotificationHandler({
         shouldSetBadge: true,
         shouldShowBanner: true,
         shouldShowList: true,
+        shouldPlaySound: true,
     }),
 });
+
+// Keep the native splash on screen until credentials have been restored, so
+// the branded splash below hands off to the app with no blank/white flash.
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 function RootLayoutContent() {
     // Initialize socket connection
@@ -34,6 +41,7 @@ function RootLayoutContent() {
 
     const dispatch = useAppDispatch();
     const { userInfo } = useAppSelector((state) => state.auth);
+    const [isAppReady, setIsAppReady] = useState(false);
 
     // Fetch fresh user profile from server when user is authenticated
     const { data: freshUserProfile } = useGetUserProfileQuery(undefined, {
@@ -57,6 +65,9 @@ function RootLayoutContent() {
                 }
             } catch (error) {
                 console.error('Failed to restore user credentials:', error);
+            } finally {
+                setIsAppReady(true);
+                SplashScreen.hideAsync().catch(() => {});
             }
         };
 
@@ -91,6 +102,10 @@ function RootLayoutContent() {
         };
         registerToken();
     }, [userInfo, updatePushToken]);
+
+    if (!isAppReady) {
+        return <AppSplashScreen />;
+    }
 
     return (
         <>

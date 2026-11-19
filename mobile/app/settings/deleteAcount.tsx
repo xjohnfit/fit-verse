@@ -55,7 +55,7 @@ const DeleteAccountScreen = () => {
                 text1: 'Account Deleted',
                 text2: 'Your account has been permanently deleted',
               });
-              router.replace('/login');
+              router.replace('/');
             } catch (error: any) {
               Toast.show({
                 type: 'error',

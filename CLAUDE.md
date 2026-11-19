@@ -21,7 +21,12 @@ FitVerse is a fitness social app: one Express + MongoDB API (`backend/`) serving
 
 - Run a single backend test with `npx jest __tests__/health.test.ts` or `npx jest -t "<test name>"`. The only test file is `backend/__tests__/health.test.ts`. It mounts routes on a bare Express app and needs no database.
 - Lint is not a clean baseline: the web app has about 150 problems (mostly `no-explicit-any`) and mobile about 85. CI runs neither lint nor tests. Its only check is the TypeScript compile inside the Docker builds.
-- Mobile runs in Expo Go, because `expo-dev-client` isn't installed. Press `i` for the iOS Simulator, where Expo installs the matching Expo Go. The App Store's Expo Go only supports the newest SDK, so a physical iPhone needs a TestFlight build: `npm run testflight` (EAS build and submit; build numbers are remote and auto-incremented).
+- **Mobile on a phone runs in a development build** (`expo-dev-client`), because the App Store's Expo Go only supports the newest Expo SDK.
+  - `npx expo start` serves the JavaScript to the installed development build. Scan the QR code, or enter `http://<Mac LAN IP>:8081`.
+  - In the iOS Simulator, press `s` to switch to Expo Go, then `i`.
+  - Rebuild the development build only after adding native code or upgrading Expo: `npx eas-cli build --profile development --platform ios`. Devices are registered with `npx eas-cli device:create`.
+  - Releases use `npm run testflight` (production profile; build numbers are remote and auto-incremented).
+  - The development build and the TestFlight app share a bundle ID, so installing one replaces the other.
 - `npm run seed:users` (backend) inserts 1,000 fake users who share the password `Password123!` into whatever database `MONGO_URI` points at.
 - There's no Prettier config. Match the surrounding file (mostly 4-space indent and single quotes).
 

@@ -1083,8 +1083,8 @@ npm run dev
 ### Prerequisites
 
 - **Node.js** 20.x or higher
-- **Expo Go app** (for development testing)
-- **iOS Simulator** (Mac only) or **Android Emulator**
+- **The local backend** running in Docker (`docker compose up -d` from the project root)
+- **iOS Simulator** (Mac only), **Android Emulator**, or a phone with the FitVerse development build (see step 3)
 - **EAS CLI** (for building native apps)
 
 ### 1️⃣ Install Dependencies
@@ -1107,15 +1107,25 @@ npm install -g eas-cli
 
 ### 3️⃣ Start Development Server
 
+On a phone, the app runs in a **development build**: FitVerse's own version of Expo Go, built with the project's exact Expo SDK and native modules. The App Store's Expo Go only runs the newest Expo SDK, so it can't open this project.
+
 ```bash
-# Start Expo development server
 npx expo start
 
-# Options:
-# Press 'i' for iOS simulator (Mac only)
-# Press 'a' for Android emulator
-# Scan QR code with Expo Go app on physical device
+# iOS Simulator: press 's' to switch to Expo Go, then 'i'
+# Android emulator: press 'a'
+# Phone: scan the QR code with the Camera app, or open the FitVerse
+# development build and enter http://<your Mac's LAN IP>:8081
 ```
+
+**One-time setup for a physical iPhone.** You only need to rebuild after adding a package with native code or upgrading Expo.
+
+```bash
+npx eas-cli device:create                                # register the iPhone (open the link it shows on the phone)
+npx eas-cli build --profile development --platform ios   # build, then install it from the QR code it prints
+```
+
+Then turn on **Settings → Privacy & Security → Developer Mode** on the iPhone, and allow **Local Network** access when the app asks. The development build and the TestFlight app share the same app ID, so installing one replaces the other.
 
 ### 4️⃣ Building for Production
 

@@ -1,4 +1,4 @@
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppSelector } from '@/hooks/useRedux';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -76,7 +76,7 @@ export default function TabsLayout() {
     const unreadCount = usersWithMessages?.filter((user: any) => user.hasUnreadMessage).length || 0;
 
     if (!userInfo) {
-        return;
+        return <Redirect href="/" />;
     }
 
     return (
