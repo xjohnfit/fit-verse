@@ -9,7 +9,7 @@ import Message from '../models/messageModel';
 import CustomCategory from '../models/customCategoryModel';
 import WorkoutTemplate from '../models/workoutTemplateModel';
 import WorkoutTemplateFolder from '../models/workoutTemplateFolderModel';
-import generateToken from '../utils/generateToken';
+import generateToken, { clearAuthCookie } from '../utils/generateToken';
 import { v2 as cloudinary } from 'cloudinary';
 
 interface AuthUserBody {
@@ -140,10 +140,7 @@ export const registerUser = asyncHandler(
 // Logout User
 export const logoutUser = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
-        res.cookie('fit-verse-token', '', {
-            httpOnly: true,
-            expires: new Date(0),
-        });
+        clearAuthCookie(res);
         res.status(200).json({ message: 'User logged out successfully' });
     }
 );
@@ -266,10 +263,7 @@ export const deleteUser = asyncHandler(
             await User.findByIdAndDelete(userId);
 
             // Clear the authentication cookie
-            res.cookie('fit-verse-token', '', {
-                httpOnly: true,
-                expires: new Date(0),
-            });
+            clearAuthCookie(res);
 
             res.status(200).json({
                 message: 'User and all associated data deleted successfully',

@@ -94,13 +94,22 @@ const corsOptions = {
 // Middlewares
 app.use(cors(corsOptions));
 
-// Body parsers with increased limit for base64 images
+// Body parser: JSON only. No client sends form data, and ignoring
+// form-encoded bodies means a form posted from another website arrives
+// with an empty body. The 50mb limit is for base64 images.
 app.use(
     express.json({
         limit: '50mb',
     }),
 );
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Express 5 leaves req.body undefined when no parser matched the request
+// (for example, a form posted from another site). Default it to an empty
+// object, so handlers validate it and answer 400 instead of crashing.
+app.use((req, _res, next) => {
+    req.body ??= {};
+    next();
+});
 
 // Error handler for JSON parsing errors
 app.use((err: any, req: any, res: any, next: any) => {
