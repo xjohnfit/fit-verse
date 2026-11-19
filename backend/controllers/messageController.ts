@@ -9,8 +9,30 @@ import User from '../models/userModel';
 import { sendPushNotification } from '../utils/pushNotifications';
 import { isImageDataUri } from '../utils/imageDataUri';
 
+// Who is making this request. Always take it from the login cookie
+// (req.user, set by `protect`), never from the URL or the body. The apps
+// still send their own ID in those places, so if one is sent and doesn't
+// match the logged-in user, refuse with 403 instead of acting for someone else.
+const getActingUserId = (
+    req: Request,
+    res: Response,
+    claimedId?: unknown,
+): string => {
+    const userId = req.user?._id?.toString();
+    if (!userId) {
+        res.status(401);
+        throw new Error('Not authorized');
+    }
+    if (claimedId !== undefined && String(claimedId) !== userId) {
+        res.status(403);
+        throw new Error('You can only access your own messages');
+    }
+    return userId;
+};
+
 export const getMessages = asyncHandler(async (req: Request, res: Response) => {
-    const { senderId, receiverId } = req.params;
+    const senderId = getActingUserId(req, res, req.params.senderId);
+    const { receiverId } = req.params;
     const { limit = '50', before } = req.query;
 
     // Check if there's a block relationship
@@ -68,7 +90,8 @@ export const getMessages = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const sendMessage = asyncHandler(async (req: Request, res: Response) => {
-    const { senderId, receiverId, text, image } = req.body;
+    const senderId = getActingUserId(req, res, req.body.senderId);
+    const { receiverId, text, image } = req.body;
 
     // Check if there's a block relationship
     const sender = await User.findById(senderId);
@@ -147,7 +170,7 @@ export const sendMessage = asyncHandler(async (req: Request, res: Response) => {
 // Get all users that have messages with the current user
 export const getUsersWithMessages = asyncHandler(
     async (req: Request, res: Response) => {
-        const { userId } = req.params;
+        const userId = getActingUserId(req, res, req.params.userId);
 
         // Validate userId format
         if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
@@ -244,14 +267,13 @@ export const getUsersWithMessages = asyncHandler(
 // Share workout template via message
 export const shareTemplate = asyncHandler(
     async (req: Request, res: Response) => {
-        const { senderId, receiverId, templateId } = req.body;
+        const senderId = getActingUserId(req, res, req.body.senderId);
+        const { receiverId, templateId } = req.body;
 
         // Validate inputs
-        if (!senderId || !receiverId || !templateId) {
+        if (!receiverId || !templateId) {
             res.status(400);
-            throw new Error(
-                'Sender ID, receiver ID, and template ID are required',
-            );
+            throw new Error('Receiver ID and template ID are required');
         }
 
         // Check if users exist
@@ -334,11 +356,12 @@ export const shareTemplate = asyncHandler(
 // Mark messages as read
 export const markMessagesAsRead = asyncHandler(
     async (req: Request, res: Response) => {
-        const { userId, otherUserId } = req.body;
+        const userId = getActingUserId(req, res, req.body.userId);
+        const { otherUserId } = req.body;
 
-        if (!userId || !otherUserId) {
+        if (!otherUserId) {
             res.status(400);
-            throw new Error('User ID and other user ID are required');
+            throw new Error('Other user ID is required');
         }
 
         // Mark all messages from otherUserId to userId as read
