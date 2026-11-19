@@ -13,6 +13,7 @@
         "lint": "eslint . --ext .ts",
         "lint:fix": "eslint . --ext .ts --fix",
         "clean": "rimraf dist coverage",
+        "seed:users": "ts-node ./scripts/seedUsers.ts",
         "prestart:prod": "npm run build",
         "health-check": "curl -f http://localhost:5000/api/health || exit 1"
     },
@@ -35,6 +36,7 @@
         "socket.io": "^4.8.1"
     },
     "devDependencies": {
+        "@faker-js/faker": "^8.4.1",
         "@types/cookie-parser": "^1.4.10",
         "@types/cors": "^2.8.19",
         "@types/express": "^5.0.5",
