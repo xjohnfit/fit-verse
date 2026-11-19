@@ -56,7 +56,8 @@ FitVerse is a fitness social app: one Express + MongoDB API (`backend/`) serving
   - Others return raw documents.
 
   Check the specific controller before writing client code against it.
-- **Images:** clients send base64 data URIs inside JSON, which is why the body limit is 50 MB. Controllers upload them to Cloudinary (`fit-verse/users`, `fit-verse/posts` and `fit-verse/exercises`; message images go to the account root) and store the `secure_url`.
+- **Images:** clients send base64 data URIs inside JSON, which is why the body limit is 50 MB. Controllers upload them to Cloudinary (`fit-verse/users`, `fit-verse/posts`, `fit-verse/exercises` and `fit-verse/messages`; message images from before 2026-11-18 sit at the account root) and store the `secure_url`.
+  - Only pass `cloudinary.uploader.upload()` a string that passed `isImageDataUri()` (`utils/imageDataUri.ts`), and use `resource_type: 'image'`. The SDK treats any other string as a URL to fetch or a file path on the server to upload.
 - **Realtime:** after connecting, clients emit `user-online` with their user ID. `config/socket.io.ts` keeps a userId → socketId map in memory and broadcasts `online-users`. Controllers emit `new-message` with `io.to(getReceiverSocketId(id))`. They send an Expo push notification (`utils/pushNotifications.ts`, one `expoPushToken` per user) only when the receiver has no connected socket.
 - **External APIs:** FatSecret is proxied server-side with OAuth 1.0 signing (`controllers/fatSecretController.ts`). Its credentials are read from env at request time.
 - **Health:** `/api/health` returns an HTML page with status 200 even when MongoDB is disconnected. The Kubernetes probes use it.

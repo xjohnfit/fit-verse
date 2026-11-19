@@ -7,6 +7,7 @@ import WorkoutTemplate from '../models/workoutTemplateModel';
 import { io, getReceiverSocketId } from '../config/socket.io';
 import User from '../models/userModel';
 import { sendPushNotification } from '../utils/pushNotifications';
+import { isImageDataUri } from '../utils/imageDataUri';
 
 export const getMessages = asyncHandler(async (req: Request, res: Response) => {
     const { senderId, receiverId } = req.params;
@@ -93,9 +94,18 @@ export const sendMessage = asyncHandler(async (req: Request, res: Response) => {
 
     let imageUrl: string | undefined;
     if (image) {
-        const uploadedImage = await cloudinary.uploader.upload(image);
+        if (!isImageDataUri(image)) {
+            res.status(400);
+            throw new Error('Image must be a base64 data URI');
+        }
+
+        const uploadedImage = await cloudinary.uploader.upload(image, {
+            folder: 'fit-verse/messages',
+            resource_type: 'image',
+        });
         imageUrl = uploadedImage.secure_url;
     }
+
     const newMessage = new Message({
         senderId,
         receiverId,

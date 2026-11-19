@@ -8,6 +8,7 @@ import User from '../models/userModel';
 
 // Package imports
 import { v2 as cloudinary } from 'cloudinary';
+import { isImageDataUri } from '../utils/imageDataUri';
 
 // Create a new post
 export const createPost = asyncHandler(async (req: Request, res: Response) => {
@@ -26,9 +27,14 @@ export const createPost = asyncHandler(async (req: Request, res: Response) => {
     }
 
     if (image) {
+        if (!isImageDataUri(image)) {
+            res.status(400);
+            throw new Error('Image must be a base64 data URI');
+        }
+
         const uploadedImage = await cloudinary.uploader.upload(image, {
             folder: 'fit-verse/posts',
-            resource_type: 'auto', // Let Cloudinary auto-detect the format
+            resource_type: 'image', // was 'auto', which also accepted raw files and videos
             format: 'jpg', // Convert HEIC to JPG for better browser compatibility
         });
         image = uploadedImage.secure_url;
@@ -87,10 +93,10 @@ export const getUserPosts = asyncHandler(
 
         // Check if current user blocked target user or vice versa
         const isBlocked = currentUser?.blockedUsers?.some(
-            (id: any) => id.toString() === user._id.toString()
+            (id: any) => id.toString() === user._id.toString(),
         );
         const isBlockedBy = user.blockedUsers?.some(
-            (id: any) => id.toString() === currentUserId?.toString()
+            (id: any) => id.toString() === currentUserId?.toString(),
         );
 
         // If blocked, return empty array
@@ -119,7 +125,7 @@ export const getUserPosts = asyncHandler(
             const filteredComments = postObj.comments.filter((comment: any) => {
                 const commentUserId = comment.user?._id?.toString();
                 return !allBlockedIds.some(
-                    (id: any) => id.toString() === commentUserId
+                    (id: any) => id.toString() === commentUserId,
                 );
             });
 
@@ -131,7 +137,7 @@ export const getUserPosts = asyncHandler(
         });
 
         res.json(transformedPosts);
-    }
+    },
 );
 
 // Get feed posts - returns all users posts and followed users posts
@@ -181,7 +187,7 @@ export const getFeedPosts = asyncHandler(
             const filteredComments = postObj.comments.filter((comment: any) => {
                 const commentUserId = comment.user?._id?.toString();
                 return !allBlockedIds.some(
-                    (id: any) => id.toString() === commentUserId
+                    (id: any) => id.toString() === commentUserId,
                 );
             });
 
@@ -193,7 +199,7 @@ export const getFeedPosts = asyncHandler(
         });
 
         res.json(transformedPosts);
-    }
+    },
 );
 
 // Get posts from followed users
@@ -233,7 +239,7 @@ export const getFollowedUsersPosts = asyncHandler(
             const filteredComments = postObj.comments.filter((comment: any) => {
                 const commentUserId = comment.user?._id?.toString();
                 return !allBlockedIds.some(
-                    (id: any) => id.toString() === commentUserId
+                    (id: any) => id.toString() === commentUserId,
                 );
             });
 
@@ -245,7 +251,7 @@ export const getFollowedUsersPosts = asyncHandler(
         });
 
         res.json(transformedPosts);
-    }
+    },
 );
 
 // Like or Unlike a post
@@ -269,10 +275,10 @@ export const likeUnlikePost = asyncHandler(
         const alreadyLiked = post.likes.includes(userId!);
         if (alreadyLiked) {
             post.likes = post.likes.filter(
-                (id) => id.toString() !== userId!.toString()
+                (id) => id.toString() !== userId!.toString(),
             );
             user.likedPosts = user.likedPosts?.filter(
-                (id: string) => id.toString() !== postId.toString()
+                (id: string) => id.toString() !== postId.toString(),
             );
         } else {
             post.likes.push(userId!);
@@ -296,7 +302,7 @@ export const likeUnlikePost = asyncHandler(
             message: alreadyLiked ? 'Post unliked' : 'Post liked',
             post: post,
         });
-    }
+    },
 );
 
 // Add a comment to a post
@@ -349,7 +355,7 @@ export const deleteComment = asyncHandler(
 
         // Find the comment
         const comment = post.comments.find(
-            (c: any) => c._id.toString() === commentId
+            (c: any) => c._id.toString() === commentId,
         );
 
         if (!comment) {
@@ -365,11 +371,11 @@ export const deleteComment = asyncHandler(
 
         // Remove the comment from the array
         post.comments = post.comments.filter(
-            (c: any) => c._id.toString() !== commentId
+            (c: any) => c._id.toString() !== commentId,
         );
 
         await post.save();
 
         res.json({ message: 'Comment deleted successfully' });
-    }
+    },
 );
