@@ -81,7 +81,7 @@ const ViewUserProfile = () => {
     const [deletePost] = useDeletePostMutation();
     const [addComment] = useAddCommentMutation();
     const [deleteComment] = useDeleteCommentMutation();
-    const [createPost] = useCreatePostMutation();
+    const [createPost, { isLoading: isCreatingPost }] = useCreatePostMutation();
 
     // Get suggested users
     const {
@@ -297,6 +297,7 @@ const ViewUserProfile = () => {
                                 handleImageUpload={handleImageUpload}
                                 removeImage={removeImage}
                                 handleCreatePost={handleCreatePost}
+                                isCreatingPost={isCreatingPost}
                                 currentUser={currentUser}
                             />
 

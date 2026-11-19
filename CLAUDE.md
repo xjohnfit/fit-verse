@@ -89,6 +89,7 @@ FitVerse is a fitness social app: one Express + MongoDB API (`backend/`) serving
   - Also: class-based dark mode via next-themes (default dark), sonner toasts and lucide icons.
   - The path alias `@/` points at `src/`.
 - Screens are grouped by feature in `src/screens/protected/<feature>/`, each with a `components/` folder and a `<feature>.types.ts`.
+- Disable a button while the mutation it fires is running (`const [createPost, { isLoading: isCreatingPost }] = useCreatePostMutation()`, then `disabled={isCreatingPost}`), or a fast double click sends it twice. Many older web and mobile buttons don't do this yet; `CreatePostSection` and the mobile `CreatePostModal` do.
 - The in-progress workout timer lives in sessionStorage (`workout_*` keys).
 
 ## Mobile architecture (mobile/)
